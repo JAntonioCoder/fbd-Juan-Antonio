@@ -1,7 +1,8 @@
 -- Active: 1715625764033@@127.0.0.1@3306@tablastiendaropa
 
 -- Creación de la tabla Cliente
-CREATE TABLE Cliente (
+-- Creación de la tabla Cliente
+CREATE TABLE IF NOT EXISTS Cliente (
     id_cliente INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(50),
     apellido VARCHAR(50),
@@ -10,15 +11,21 @@ CREATE TABLE Cliente (
 );
 
 -- Creación de la tabla Empleado
-CREATE TABLE Empleado (
+CREATE TABLE IF NOT EXISTS Empleado (
     id_empleado INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(50),
     apellido VARCHAR(50),
     puesto VARCHAR(50)
 );
 
+-- Creación de la tabla Categoria
+CREATE TABLE IF NOT EXISTS Categoria (
+    id_categoria INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100)
+);
+
 -- Creación de la tabla Producto
-CREATE TABLE Producto (
+CREATE TABLE IF NOT EXISTS Producto (
     id_producto INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100),
     descripcion TEXT,
@@ -30,7 +37,7 @@ CREATE TABLE Producto (
 );
 
 -- Creación de la tabla Proveedor
-CREATE TABLE Proveedor (
+CREATE TABLE IF NOT EXISTS Proveedor (
     id_proveedor INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100),
     contacto VARCHAR(100),
@@ -38,14 +45,8 @@ CREATE TABLE Proveedor (
     direccion VARCHAR(100)
 );
 
--- Creación de la tabla Categoria
-CREATE TABLE Categoria (
-    id_categoria INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(100)
-);
-
 -- Creación de la tabla Transaccion
-CREATE TABLE Transaccion (
+CREATE TABLE IF NOT EXISTS Transaccion (
     id_transaccion INT PRIMARY KEY AUTO_INCREMENT,
     fecha DATE,
     total DECIMAL(10,2),
@@ -54,8 +55,6 @@ CREATE TABLE Transaccion (
     FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente),
     FOREIGN KEY (id_empleado) REFERENCES Empleado(id_empleado)
 );
-
-
 
 -- Inserción de datos en la tabla Cliente
 INSERT INTO Cliente (nombre, apellido, direccion, telefono) VALUES
@@ -83,6 +82,12 @@ INSERT INTO Empleado (nombre, apellido, puesto) VALUES
 ('María', 'Romero', 'Asesor'),
 ('Juan', 'González', 'Vigilante');
 
+-- Inserción de datos en la tabla Categoria
+INSERT INTO Categoria (nombre) VALUES
+('Ropa Masculina'),
+('Ropa Femenina'),
+('Calzado');
+
 -- Inserción de datos en la tabla Producto
 INSERT INTO Producto (nombre, descripcion, precio, talla, color, id_categoria) VALUES
 ('Camisa Polo', 'Camisa de algodón para hombre', 29.99, 'M', 'Azul', 1),
@@ -109,12 +114,6 @@ INSERT INTO Proveedor (nombre, contacto, telefono, direccion) VALUES
 ('Proveedor I', 'Laura Hernández', '2223334444', 'Carrera Proveedor 9'),
 ('Proveedor J', 'Carlos Díaz', '5556667777', 'Calle Proveedor 10');
 
--- Inserción de datos en la tabla Categoria
-INSERT INTO Categoria (nombre) VALUES
-('Ropa Masculina'),
-('Ropa Femenina'),
-('Calzado');
-
 -- Inserción de datos en la tabla Transaccion
 INSERT INTO Transaccion (fecha, total, id_cliente, id_empleado) VALUES
 ('2024-04-18', 98.97, 1, 2),
@@ -124,3 +123,79 @@ INSERT INTO Transaccion (fecha, total, id_cliente, id_empleado) VALUES
 ('2024-04-14', 87.50, 5, 6),
 ('2024-04-13', 64.75, 6, 7),
 ('2024-04-12', 102.30, 7, 8);
+
+-- Consultas
+-- Seleccionar todos los clientes
+SELECT id_cliente, nombre, apellido, direccion, telefono FROM Cliente;
+
+-- Seleccionar todos los empleados
+SELECT id_empleado, nombre, apellido, puesto FROM Empleado;
+
+-- Seleccionar todos los productos
+SELECT id_producto, nombre, descripcion, precio, talla, color FROM Producto;
+
+-- Seleccionar todas las transacciones
+SELECT id_transaccion, fecha, total, id_cliente, id_empleado FROM Transaccion;
+
+-- Ordenar productos por precio ascendente
+SELECT * FROM Producto ORDER BY precio ASC;
+
+-- Ordenar clientes por nombre descendente
+SELECT * FROM Cliente ORDER BY nombre DESC;
+
+-- Contar el número de registros en cada tabla
+SELECT COUNT(*) FROM Cliente;
+SELECT COUNT(*) FROM Empleado;
+SELECT COUNT(*) FROM Producto;
+SELECT COUNT(*) FROM Proveedor;
+SELECT COUNT(*) FROM Categoria;
+SELECT COUNT(*) FROM Transaccion;
+
+-- Sumar el precio de todos los productos
+SELECT SUM(precio) FROM Producto;
+
+-- Encontrar el máximo y mínimo precio de los productos
+SELECT MAX(precio), MIN(precio) FROM Producto;
+
+-- Unir Cliente y Transaccion para obtener el nombre del cliente y el total de la transacción
+SELECT Cliente.nombre, Transaccion.total 
+FROM Cliente
+INNER JOIN Transaccion ON Cliente.id_cliente = Transaccion.id_cliente;
+
+-- Unir Empleado y Transaccion para obtener el nombre del empleado y la fecha de la transacción
+SELECT Empleado.nombre, Transaccion.fecha 
+FROM Empleado
+INNER JOIN Transaccion ON Empleado.id_empleado = Transaccion.id_empleado;
+
+-- Seleccionar productos que cuestan más de 50.00
+SELECT * FROM Producto
+WHERE precio > 50.00;
+
+-- Unir Clientes y Empleados, y diferenciar el tipo de entidad
+SELECT nombre, 'Cliente' AS Tipo
+FROM Cliente
+UNION
+SELECT nombre, 'Empleado' AS Tipo
+FROM Empleado;
+
+-- Seleccionar transacciones entre dos fechas específicas
+SELECT * FROM Transaccion
+WHERE fecha BETWEEN '2024-01-01' AND '2024-12-31';
+
+-- Seleccionar clientes que tienen una edad mayor al promedio
+SELECT nombre
+FROM Cliente
+WHERE id_cliente > (SELECT AVG(id_cliente) FROM Cliente);
+
+-- Empleados que no tienen transacciones asociadas
+SELECT nombre
+FROM Empleado e
+WHERE NOT EXISTS (
+    SELECT 1 FROM Transaccion t WHERE t.id_empleado = e.id_empleado
+);
+
+-- Seleccionar clientes con paginación
+SELECT * 
+FROM Cliente
+ORDER BY nombre DESC
+LIMIT 10 OFFSET 10;
