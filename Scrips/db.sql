@@ -1,7 +1,6 @@
 -- Active: 1715625764033@@127.0.0.1@3306@tablastiendaropa
 
 -- Creación de la tabla Cliente
--- Creación de la tabla Cliente
 CREATE TABLE IF NOT EXISTS Cliente (
     id_cliente INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(50),
@@ -57,17 +56,17 @@ CREATE TABLE IF NOT EXISTS Transaccion (
 );
 
 -- Inserción de datos en la tabla Cliente
-INSERT INTO Cliente (nombre, apellido, direccion, telefono) VALUES
-('Juan', 'Perez', 'Calle 123', '1234567890'),
-('María', 'Gómez', 'Avenida 456', '0987654321'),
-('Pedro', 'Martínez', 'Carrera 789', '1112223333'),
-('Laura', 'López', 'Calle Principal', '4445556666'),
-('Carlos', 'González', 'Avenida Central', '7778889999'),
-('Ana', 'Hernández', 'Calle 456', '3334445555'),
-('José', 'Díaz', 'Avenida 789', '6667778888'),
-('Sofía', 'Rodríguez', 'Calle Secundaria', '9990001111'),
-('Luis', 'Sánchez', 'Avenida 123', '2223334444'),
-('Elena', 'Romero', 'Carrera 345', '5556667777');
+INSERT INTO Cliente (nombre, apellido, telefono) VALUES
+('Juan', 'Perez', '1234567890'),
+('María', 'Gómez', '0987654321'),
+('Pedro', 'Martínez', '1112223333'),
+('Laura', 'López', '4445556666'),
+('Carlos', 'González', '7778889999'),
+('Ana', 'Hernández', '3334445555'),
+('José', 'Díaz', '6667778888'),
+('Sofía', 'Rodríguez', '9990001111'),
+('Luis', 'Sánchez', '2223334444'),
+('Elena', 'Romero', '5556667777');
 
 -- Inserción de datos en la tabla Empleado
 INSERT INTO Empleado (nombre, apellido, puesto) VALUES
@@ -126,7 +125,7 @@ INSERT INTO Transaccion (fecha, total, id_cliente, id_empleado) VALUES
 
 -- Consultas
 -- Seleccionar todos los clientes
-SELECT id_cliente, nombre, apellido, direccion, telefono FROM Cliente;
+SELECT id_cliente, nombre, apellido, telefono FROM Cliente;
 
 -- Seleccionar todos los empleados
 SELECT id_empleado, nombre, apellido, puesto FROM Empleado;
@@ -150,52 +149,3 @@ SELECT COUNT(*) FROM Producto;
 SELECT COUNT(*) FROM Proveedor;
 SELECT COUNT(*) FROM Categoria;
 SELECT COUNT(*) FROM Transaccion;
-
--- Sumar el precio de todos los productos
-SELECT SUM(precio) FROM Producto;
-
--- Encontrar el máximo y mínimo precio de los productos
-SELECT MAX(precio), MIN(precio) FROM Producto;
-
--- Unir Cliente y Transaccion para obtener el nombre del cliente y el total de la transacción
-SELECT Cliente.nombre, Transaccion.total 
-FROM Cliente
-INNER JOIN Transaccion ON Cliente.id_cliente = Transaccion.id_cliente;
-
--- Unir Empleado y Transaccion para obtener el nombre del empleado y la fecha de la transacción
-SELECT Empleado.nombre, Transaccion.fecha 
-FROM Empleado
-INNER JOIN Transaccion ON Empleado.id_empleado = Transaccion.id_empleado;
-
--- Seleccionar productos que cuestan más de 50.00
-SELECT * FROM Producto
-WHERE precio > 50.00;
-
--- Unir Clientes y Empleados, y diferenciar el tipo de entidad
-SELECT nombre, 'Cliente' AS Tipo
-FROM Cliente
-UNION
-SELECT nombre, 'Empleado' AS Tipo
-FROM Empleado;
-
--- Seleccionar transacciones entre dos fechas específicas
-SELECT * FROM Transaccion
-WHERE fecha BETWEEN '2024-01-01' AND '2024-12-31';
-
--- Seleccionar clientes que tienen una edad mayor al promedio
-SELECT nombre
-FROM Cliente
-WHERE id_cliente > (SELECT AVG(id_cliente) FROM Cliente);
-
--- Empleados que no tienen transacciones asociadas
-SELECT nombre
-FROM Empleado e
-WHERE NOT EXISTS (
-    SELECT 1 FROM Transaccion t WHERE t.id_empleado = e.id_empleado
-);
-
--- Seleccionar clientes con paginación
-SELECT * 
-FROM Cliente
-ORDER BY nombre DESC
-LIMIT 10 OFFSET 10;
