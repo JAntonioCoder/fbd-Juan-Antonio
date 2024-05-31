@@ -1,4 +1,8 @@
--- Active: 1715625764033@@127.0.0.1@3306@tablastiendaropa
+-- Creación de la base de datos
+CREATE DATABASE IF NOT EXISTS tablastiendaropa;
+
+-- Usar la base de datos
+USE tablastiendaropa;
 
 -- Creación de la tabla Cliente
 CREATE TABLE IF NOT EXISTS Cliente (
@@ -23,16 +27,23 @@ CREATE TABLE IF NOT EXISTS Categoria (
     nombre VARCHAR(100)
 );
 
+-- Creación de la tabla Talla
+CREATE TABLE IF NOT EXISTS Talla (
+    id_talla INT PRIMARY KEY AUTO_INCREMENT,
+    talla VARCHAR(10)
+);
+
 -- Creación de la tabla Producto
 CREATE TABLE IF NOT EXISTS Producto (
     id_producto INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100),
     descripcion TEXT,
     precio DECIMAL(10,2),
-    talla VARCHAR(10),
     color VARCHAR(20),
     id_categoria INT,
-    FOREIGN KEY (id_categoria) REFERENCES Categoria(id_categoria)
+    id_talla INT NOT NULL,
+    FOREIGN KEY (id_categoria) REFERENCES Categoria(id_categoria),
+    FOREIGN KEY (id_talla) REFERENCES Talla(id_talla)
 );
 
 -- Creación de la tabla Proveedor
@@ -56,17 +67,17 @@ CREATE TABLE IF NOT EXISTS Transaccion (
 );
 
 -- Inserción de datos en la tabla Cliente
-INSERT INTO Cliente (nombre, apellido, telefono) VALUES
-('Juan', 'Perez', '1234567890'),
-('María', 'Gómez', '0987654321'),
-('Pedro', 'Martínez', '1112223333'),
-('Laura', 'López', '4445556666'),
-('Carlos', 'González', '7778889999'),
-('Ana', 'Hernández', '3334445555'),
-('José', 'Díaz', '6667778888'),
-('Sofía', 'Rodríguez', '9990001111'),
-('Luis', 'Sánchez', '2223334444'),
-('Elena', 'Romero', '5556667777');
+INSERT INTO Cliente (nombre, apellido, direccion, telefono) VALUES
+('Juan', 'Perez', 'Calle 123', '1234567890'),
+('María', 'Gómez', 'Avenida 456', '0987654321'),
+('Pedro', 'Martínez', 'Carrera 789', '1112223333'),
+('Laura', 'López', 'Calle Principal', '4445556666'),
+('Carlos', 'González', 'Avenida Central', '7778889999'),
+('Ana', 'Hernández', 'Calle 456', '3334445555'),
+('José', 'Díaz', 'Avenida 789', '6667778888'),
+('Sofía', 'Rodríguez', 'Calle Secundaria', '9990001111'),
+('Luis', 'Sánchez', 'Avenida 123', '2223334444'),
+('Elena', 'Romero', 'Carrera 345', '5556667777');
 
 -- Inserción de datos en la tabla Empleado
 INSERT INTO Empleado (nombre, apellido, puesto) VALUES
@@ -87,18 +98,29 @@ INSERT INTO Categoria (nombre) VALUES
 ('Ropa Femenina'),
 ('Calzado');
 
+-- Inserción de datos en la tabla Talla
+INSERT INTO Talla (talla) VALUES
+('S'),
+('M'),
+('L'),
+('XL'),
+('32'),
+('34'),
+('36'),
+('38');
+
 -- Inserción de datos en la tabla Producto
-INSERT INTO Producto (nombre, descripcion, precio, talla, color, id_categoria) VALUES
-('Camisa Polo', 'Camisa de algodón para hombre', 29.99, 'M', 'Azul', 1),
-('Vestido Floral', 'Vestido de primavera para mujer', 49.99, 'L', 'Rosa', 2),
-('Jeans Clásicos', 'Pantalones de mezclilla para hombre', 39.99, '32', 'Negro', 1),
-('Blusa Elegante', 'Blusa formal para mujer', 34.99, 'S', 'Blanco', 2),
-('Zapatillas Deportivas', 'Zapatillas para correr', 59.99, '8', 'Gris', 3),
-('Traje de Baño', 'Traje de baño para mujer', 24.99, 'M', 'Azul', 2),
-('Sweater de Lana', 'Sweater cálido para invierno', 44.99, 'L', 'Gris', 1),
-('Camisa a Cuadros', 'Camisa informal para hombre', 27.99, 'XL', 'Rojo', 1),
-('Falda Midi', 'Falda casual para mujer', 19.99, 'M', 'Negro', 2),
-('Pantalón Chino', 'Pantalones elegantes para hombre', 37.99, '34', 'Beige', 1);
+INSERT INTO Producto (nombre, descripcion, precio, color, id_categoria, id_talla) VALUES
+('Camisa Polo', 'Camisa de algodón para hombre', 29.99, 'Azul', 1, 2),
+('Vestido Floral', 'Vestido de primavera para mujer', 49.99, 'Rosa', 2, 3),
+('Jeans Clásicos', 'Pantalones de mezclilla para hombre', 39.99, 'Negro', 1, 5),
+('Blusa Elegante', 'Blusa formal para mujer', 34.99, 'Blanco', 2, 1),
+('Zapatillas Deportivas', 'Zapatillas para correr', 59.99, 'Gris', 3, 6),
+('Traje de Baño', 'Traje de baño para mujer', 24.99, 'Azul', 2, 2),
+('Sweater de Lana', 'Sweater cálido para invierno', 44.99, 'Gris', 1, 3),
+('Camisa a Cuadros', 'Camisa informal para hombre', 27.99, 'Rojo', 1, 4),
+('Falda Midi', 'Falda casual para mujer', 19.99, 'Negro', 2, 2),
+('Pantalón Chino', 'Pantalones elegantes para hombre', 37.99, 'Beige', 1, 5);
 
 -- Inserción de datos en la tabla Proveedor
 INSERT INTO Proveedor (nombre, contacto, telefono, direccion) VALUES
@@ -123,29 +145,50 @@ INSERT INTO Transaccion (fecha, total, id_cliente, id_empleado) VALUES
 ('2024-04-13', 64.75, 6, 7),
 ('2024-04-12', 102.30, 7, 8);
 
--- Consultas
--- Seleccionar todos los clientes
-SELECT id_cliente, nombre, apellido, telefono FROM Cliente;
+-- Consultas básicas
+-- 1.1. Seleccionar todos los datos de una tabla:
+SELECT * FROM Cliente;
 
--- Seleccionar todos los empleados
-SELECT id_empleado, nombre, apellido, puesto FROM Empleado;
+-- 1.2. Seleccionar datos específicos de una tabla:
+SELECT nombre, apellido, direccion FROM Cliente;
 
--- Seleccionar todos los productos
-SELECT id_producto, nombre, descripcion, precio, talla, color FROM Producto;
+-- 1.3. Seleccionar datos filtrados por una condición:
+SELECT * FROM Empleado WHERE puesto = 'Vendedor';
 
--- Seleccionar todas las transacciones
-SELECT id_transaccion, fecha, total, id_cliente, id_empleado FROM Transaccion;
+-- 1.4. Ordenar resultados en orden ascendente o descendente:
+SELECT * FROM Producto ORDER BY precio DESC;
 
--- Ordenar productos por precio ascendente
-SELECT * FROM Producto ORDER BY precio ASC;
-
--- Ordenar clientes por nombre descendente
-SELECT * FROM Cliente ORDER BY nombre DESC;
-
--- Contar el número de registros en cada tabla
-SELECT COUNT(*) FROM Cliente;
-SELECT COUNT(*) FROM Empleado;
-SELECT COUNT(*) FROM Producto;
-SELECT COUNT(*) FROM Proveedor;
-SELECT COUNT(*) FROM Categoria;
+-- 1.5. Contar el número de filas en una tabla:
 SELECT COUNT(*) FROM Transaccion;
+
+-- 1.6. Sumar valores de una columna:
+SELECT SUM(total) FROM Transaccion;
+
+-- 1.7. Obtener el valor máximo y mínimo de una columna:
+SELECT MAX(precio), MIN(precio) FROM Producto;
+
+-- 1.8. Unir dos tablas usando INNER JOIN:
+SELECT Cliente.nombre AS cliente, Transaccion.total
+FROM Cliente
+INNER JOIN Transaccion ON Cliente.id_cliente = Transaccion.id_cliente;
+
+-- Consultas intermedias
+-- 2.1. Consulta con JOIN y condiciones adicionales:
+SELECT e.nombre AS empleado, d.nombre AS departamento
+FROM Empleado e
+JOIN Transaccion t ON e.id_empleado = t.id_empleado
+JOIN Cliente c ON t.id_cliente = c.id_cliente
+WHERE c.nombre = 'Juan';
+
+-- 2.2. Consulta con subconsultas correlacionadas:
+SELECT e.nombre AS empleado, e.puesto, e.id_empleado
+FROM Empleado e
+WHERE e.id_empleado NOT IN (
+    SELECT id_empleado FROM Transaccion
+);
+
+-- 2.3. Consulta con funciones de agregación y GROUP BY:
+SELECT e.nombre AS empleado, COUNT(t.id_transaccion) AS transacciones
+FROM Empleado e
+LEFT JOIN Transaccion t ON e.id_empleado = t.id_empleado
+GROUP BY e.nombre;
